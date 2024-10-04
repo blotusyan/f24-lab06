@@ -2,42 +2,13 @@ package edu.cmu.cs.cs214.rec02;
 
 import java.util.Arrays;
 
-/**
- * A resizable-array implementation of the {@link IntQueue} interface. The head of
- * the queue starts out at the head of the array, allowing the queue to grow and
- * shrink in constant time.
- *
- * TODO: This implementation contains three bugs! Use your tests to determine the
- * source of the bugs and correct them!
- *
- * @author Alex Lockwood
- * @author Ye Lu
- */
 public class ArrayIntQueue implements IntQueue {
 
-    /**
-     * An array holding this queue's data
-     */
-    private int[] elementData;
+    private int[] elementData; // Array holding this queue's data
+    private int head; // Index of the next dequeue-able value
+    private int size; // Current size of the queue
+    private static final int INITIAL_SIZE = 10; // Initial size for new instances of ArrayIntQueue
 
-    /**
-     * Index of the next dequeue-able value
-     */
-    private int head;
-
-    /**
-     * Current size of queue
-     */
-    private int size;
-
-    /**
-     * The initial size for new instances of ArrayQueue
-     */
-    private static final int INITIAL_SIZE = 10;
-
-    /**
-     * Constructs an empty queue with an initial capacity of ten.
-     */
     public ArrayIntQueue() {
         elementData = new int[INITIAL_SIZE];
         head = 0;
@@ -46,63 +17,56 @@ public class ArrayIntQueue implements IntQueue {
 
     /** {@inheritDoc} */
     public void clear() {
-        Arrays.fill(elementData, 0);
+        Arrays.fill(elementData, 0); // Clear array elements
         size = 0;
-        head = 0;
+        head = 0; // Reset head to 0
     }
 
     /** {@inheritDoc} */
     public Integer dequeue() {
         if (isEmpty()) {
-            return null;
+            return null; // Return null if queue is empty
         }
-        Integer value = elementData[head];
-        head = (head + 1) % elementData.length;
-        size--;
+        Integer value = elementData[head]; // Get value at the head
+        head = (head + 1) % elementData.length; // Move head forward
+        size--; // Decrement size
         return value;
     }
 
     /** {@inheritDoc} */
     public boolean enqueue(Integer value) {
-        ensureCapacity();
-        int tail = (head + size) % elementData.length;
-        elementData[tail] = value;
-        size++;
-        return true;
+        ensureCapacity(); // Ensure there is capacity to add new element
+        int tail = (head + size) % elementData.length; // Calculate tail position
+        elementData[tail] = value; // Add value to the tail
+        size++; // Increment size
+        return true; // Return true for successful enqueue
     }
 
     /** {@inheritDoc} */
     public boolean isEmpty() {
-        return size >= 0;
+        return size == 0; // Check if size is zero
     }
 
     /** {@inheritDoc} */
     public Integer peek() {
-        return elementData[head];
+        return isEmpty() ? null : elementData[head]; // Return null if empty, else return head element
     }
 
     /** {@inheritDoc} */
     public int size() {
-        return size;
+        return size; // Return current size
     }
 
-    /**
-     * Increases the capacity of this <tt>ArrayIntQueue</tt> instance, if
-     * necessary, to ensure that it can hold at least size + 1 elements.
-     */
     private void ensureCapacity() {
-        if (size == elementData.length) {
+        if (size == elementData.length) { // Check if array is full
             int oldCapacity = elementData.length;
-            int newCapacity = 2 * oldCapacity + 1;
+            int newCapacity = 2 * oldCapacity + 1; // Double capacity
             int[] newData = new int[newCapacity];
-            for (int i = head; i < oldCapacity; i++) {
-                newData[i - head] = elementData[i];
+            for (int i = 0; i < size; i++) { // Copy elements
+                newData[i] = elementData[(head + i) % oldCapacity]; // Adjust index for circular array
             }
-            for (int i = 0; i < head; i++) {
-                newData[head - i] = elementData[i];
-            }
-            elementData = newData;
-            head = 0;
+            elementData = newData; // Replace old array with new one
+            head = 0; // Reset head
         }
     }
 }
